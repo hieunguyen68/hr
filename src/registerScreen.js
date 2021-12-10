@@ -6,35 +6,40 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
+  Platform,
+  Alert,
 } from 'react-native';
 import {scale} from 'react-native-size-matters';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import {ScrollView} from 'react-native-gesture-handler';
+import {getEndpoint} from './utils';
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
   const [name, setName] = useState('');
-  const [FullName, setFullName] = useState('');
-  const [pass, setPass] = useState('');
-  const [pass1, setPass1] = useState('');
-  const RegisterConfirm = () => {
-    axios
-      .post('https://elearning.tmgs.vn/api/v2/user', {
-        username: name,
-        password: pass,
-        fullName: FullName,
-        gender: '',
-      })
-      .then(response => console.log(response))
-      .catch(err => console.log(err));
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [password1, setPassword1] = useState('');
+  const [companyName, setCompanyName] = useState('');
+
+  const onSubmit = async () => {
+    try {
+      if (password !== password1)
+        return Alert.alert('Mật khẩu nhập lại không chính xác');
+      await axios.post(`${getEndpoint(Platform.OS)}/auth/register`, {
+        name,
+        email,
+        password,
+        companyName,
+      });
+      navigation.navigate('LoginScreen');
+    } catch (error) {
+      Alert.alert('Email đã tồn tại');
+      console.log(error);
+    }
   };
-  const ClearInput = () => {
-    setName('');
-    setFullName('');
-    setPass('');
-    setPass1('');
-  };
+
   return (
     <View style={styles.container}>
       <View style={styles.logocontainerRegister}>
@@ -49,10 +54,10 @@ const RegisterScreen = () => {
           <View style={styles.container}>
             <View style={styles.InforContainer}>
               <View style={styles.EmailInput}>
-                <Text style={styles.title}>Tên đăng nhập</Text>
+                <Text style={styles.title}>Email</Text>
                 <View style={styles.emailBox}>
                   <TextInput
-                    onChangeText={nameinput => setName(nameinput)}
+                    onChangeText={nameinput => setEmail(nameinput)}
                     style={styles.textInput}
                     placeholder={''}
                   />
@@ -62,7 +67,7 @@ const RegisterScreen = () => {
                 <Text style={styles.title}>Họ và tên</Text>
                 <View style={styles.emailBox}>
                   <TextInput
-                    onChangeText={input => setFullName(input)}
+                    onChangeText={input => setName(input)}
                     style={styles.textInput}
                     placeholder={''}
                   />
@@ -72,9 +77,10 @@ const RegisterScreen = () => {
                 <Text style={styles.title}>Mật khẩu</Text>
                 <View style={styles.emailBox}>
                   <TextInput
-                    onChangeText={passinput => setPass(passinput)}
+                    onChangeText={passinput => setPassword(passinput)}
                     style={styles.textInput}
                     placeholder={''}
+                    secureTextEntry={true}
                   />
                 </View>
               </View>
@@ -82,19 +88,10 @@ const RegisterScreen = () => {
                 <Text style={styles.title}>Nhập lại mật khẩu</Text>
                 <View style={styles.emailBox}>
                   <TextInput
-                    onChangeText={passinput1 => setPass1(passinput1)}
+                    onChangeText={passinput1 => setPassword1(passinput1)}
                     style={styles.textInput}
                     placeholder={''}
-                  />
-                </View>
-              </View>
-              <View style={styles.EmailInput}>
-                <Text style={styles.title}>Chức vụ</Text>
-                <View style={styles.emailBox}>
-                  <TextInput
-                    onChangeText={nameinput => setName(nameinput)}
-                    style={styles.textInput}
-                    placeholder={''}
+                    secureTextEntry={true}
                   />
                 </View>
               </View>
@@ -102,7 +99,7 @@ const RegisterScreen = () => {
                 <Text style={styles.title}>Tên công ty</Text>
                 <View style={styles.emailBox}>
                   <TextInput
-                    onChangeText={nameinput => setName(nameinput)}
+                    onChangeText={nameinput => setCompanyName(nameinput)}
                     style={styles.textInput}
                     placeholder={''}
                   />
@@ -113,26 +110,26 @@ const RegisterScreen = () => {
         </ScrollView>
       </View>
 
-       <TouchableOpacity
-        onPress={() => [RegisterConfirm(), ClearInput()]}
-            style={[
-              styles.signIn,
-              {
-                borderColor: '#009387',
-                borderWidth: 1,
-                marginTop: 30,
-              },
-            ]}>
-            <Text
-              style={[
-                styles.textSign,
-                {
-                  color: '#009387',
-                },
-              ]}>
-              Đăng Ký
-            </Text>
-          </TouchableOpacity>
+      <TouchableOpacity
+        onPress={onSubmit}
+        style={[
+          styles.signIn,
+          {
+            borderColor: '#009387',
+            borderWidth: 1,
+            marginTop: 30,
+          },
+        ]}>
+        <Text
+          style={[
+            styles.textSign,
+            {
+              color: '#009387',
+            },
+          ]}>
+          Đăng Ký
+        </Text>
+      </TouchableOpacity>
       <View style={styles.centerText}>
         <Text>Đã Có Tài Khoản ? </Text>
         <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>

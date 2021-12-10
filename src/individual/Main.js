@@ -19,71 +19,20 @@ import {ScrollView} from 'react-native-gesture-handler';
 
 const MainIndividual = () => {
   const route = useRoute();
-  const [dataHistory, setDataHistory] = useState([]);
-  const [dataUser, setDataUser] = useState([]);
-  const [token, setToken] = useState('');
-  const [count, setCount] = useState(0);
   const navigation = useNavigation();
+  const [user, setUser] = useState({});
 
-  // const getToken = async () => {
-  //   try {
-  //     const value = await AsyncStorage.getItem('@MyToken');
-  //     if (value !== null) {
-  //       console.log('We have Token');
-  //       setToken(value);
-  //     } else {
-  //       console.log('Dont have Token');
-  //     }
-  //   } catch (err) {
-  //     console.log('Read data error');
-  //   }
-  //   console.log('Done.');
-  // };
-  // const getdata = async () => {
-  //   // await getToken();
-  //   await axios
-  //     .get(
-  //       'https://elearning.tmgs.vn/api/competition/my-competition/statistical',
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       },
-  //     )
-  //     .then((response) => {
-  //       setDataHistory(response.data.data);
-  //     })
-  //     .catch(function (error) {
-  //       // handle error
-  //       setCount(count + 1);
-  //       console.log(error);
-  //     })
-  //     .finally(() => {
-  //       console.log(dataHistory);
-  //       dataHistory.length === 0 ? setCount(count + 1) : null;
-  //     });
-  //   await axios
-  //     .get('https://elearning.tmgs.vn/api/profile/detail', {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       setDataUser(response.data.data);
-  //     })
-  //     .catch(function (error) {
-  //       // handle error
-  //       console.log(error);
-  //     })
-  //     .finally(() => {
-  //       console.log(dataUser);
-  //       dataUser.length === 0 ? setCount(count + 1) : null;
-  //     });
-  // };
-  // useEffect(() => {
-  //   getdata();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [count]);
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  const getUser = async () => {
+    try {
+      const user = await AsyncStorage.getItem('user');
+      setUser(JSON.parse(user));
+    } catch (error) {}
+  };
+
   return (
     <View style={styles.container}>
       <TitleBar title1={'Thông tin cá nhân'} />
@@ -121,51 +70,41 @@ const MainIndividual = () => {
               <Text style={styles.textLeft}>Số Điện Thoại</Text>
               <View style={styles.leftLine} />
 
-              <Text style={styles.textLeft}>Chức vụ</Text>
-              <View style={styles.leftLine} />
-
               <Text style={styles.textLeft}>Công Ty</Text>
               <View style={styles.leftLine} />
 
               <Text style={styles.textLeft}>Website</Text>
               <View style={styles.leftLine} />
-
-              <Text style={styles.textLeft}>Mô tả công ty</Text>
-              <View style={styles.leftLine} />
             </View>
             <View style={styles.RightTable}>
-              <Text style={styles.textLeft}>{dataUser.fullname}</Text>
+              <Text style={styles.textLeft}>{user.name}</Text>
               <View style={styles.rightLine} />
 
               <Text style={styles.textLeft}>
-                {new Date(dataUser.birth).toLocaleDateString('en-GB')}
+                {user.birthday ? (
+                  <>
+                    {user.birthday.slice(0, 2)}/{user.birthday.slice(2, 4)}/
+                    {user.birthday.slice(4)}
+                  </>
+                ) : (
+                  <></>
+                )}
               </Text>
               <View style={styles.rightLine} />
 
-              <Text style={styles.textLeft}>
-                {dataUser.gender === 1 ? 'Nam' : 'Nữ'}
-              </Text>
+              <Text style={styles.textLeft}>{user.gender}</Text>
               <View style={styles.rightLine} />
 
-              <Text style={styles.textLeft}>{dataUser.email}</Text>
+              <Text style={styles.textLeft}>{user.email}</Text>
               <View style={styles.rightLine} />
 
-              <Text style={styles.textLeft}>{dataUser.phone}</Text>
+              <Text style={styles.textLeft}>{user.phone}</Text>
               <View style={styles.rightLine} />
 
-              <Text style={styles.textLeft}>{dataUser.company}</Text>
+              <Text style={styles.textLeft}>{user.companyName}</Text>
               <View style={styles.rightLine} />
 
-              <Text style={styles.textLeft}>{dataUser.skill}</Text>
-              <View style={styles.rightLine} />
-
-              <Text style={styles.textLeft}>{dataUser.skill}</Text>
-              <View style={styles.rightLine} />
-
-              <Text style={styles.textLeft}>{dataUser.skill}</Text>
-              <View style={styles.rightLine} />
-              
-              <Text style={styles.textLeft}>{dataUser.skill}</Text>
+              <Text style={styles.textLeft}>{user.website}</Text>
               <View style={styles.rightLine} />
             </View>
           </View>
@@ -173,23 +112,7 @@ const MainIndividual = () => {
         <View style={styles.line} />
         <TouchableOpacity
           style={styles.button1}
-          onPress={() =>
-            navigation.navigate('EditProfile', {
-              avatar: dataUser.avatar,
-              name: dataUser.name,
-              MaSv: dataUser.MaSv,
-              class: dataUser.class,
-              phone: dataUser.phone,
-              email: dataUser.email,
-              gender: dataUser.gender,
-              place: dataUser.place,
-              birth: dataUser.birth,
-              skill: dataUser.skill,
-              degree: dataUser.degree,
-              careergoals: dataUser.careergoals,
-              UserToken: dataUser.UserTK,
-            })
-          }>
+          onPress={() => navigation.navigate('EditProfile', user)}>
           <LinearGradient
             colors={['rgb(254,193,13)', 'rgb(238,49,40)']}
             style={styles.signIn}>

@@ -5,7 +5,9 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  Platform,
   StyleSheet,
+  Alert,
 } from 'react-native';
 
 import {scale} from 'react-native-size-matters';
@@ -17,25 +19,43 @@ import axios from 'axios';
 import LinearGradient from 'react-native-linear-gradient';
 import {ScrollView} from 'react-native-gesture-handler';
 import {Can, Check} from '../../svg/icon';
+import {getEndpoint} from '../utils';
 
 const Profile = () => {
   const route = useRoute();
-  const [dataHistory, setDataHistory] = useState([]);
-  const [dataUser, setDataUser] = useState([]);
-  const [token, setToken] = useState('');
-  const [count, setCount] = useState(0);
+  const {name, birthday, gender, email, address, phone, degree} =
+    route.params.user;
   const navigation = useNavigation();
+
+  const approve = async () => {
+    try {
+      await axios.post(`${getEndpoint(Platform.OS)}/hr/approve`, {
+        userId: route.params.user.id,
+        postId: route.params.post._id,
+      });
+      navigation.navigate('LocationList');
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Có lỗi xảy ra');
+    }
+  };
+
+  const reject = async () => {
+    try {
+      await axios.post(`${getEndpoint(Platform.OS)}/hr/reject`, {
+        userId: route.params.user.id,
+        postId: route.params.post._id,
+      });
+      navigation.navigate('CandidateProfile');
+    } catch (error) {
+      Alert.alert('Có lỗi xảy ra');
+    }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.avatarContainer}>
         <View style={styles.circle}>
-          {/* <Image
-            style={styles.logo}
-            source={{
-              uri: 'http://elearning.tmgs.vn' + route.params.avatar,
-            }}
-          /> */}
           <Image
             style={styles.logo}
             source={require('../../img/logohvktmm.png')}
@@ -69,51 +89,44 @@ const Profile = () => {
               <View style={styles.leftLine} />
             </View>
             <View style={styles.RightTable}>
-              <Text style={styles.textLeft}>{dataUser.fullname}</Text>
+              <Text style={styles.textLeft}>{name}</Text>
               <View style={styles.rightLine} />
 
-              <Text style={styles.textLeft}>
-                {new Date(dataUser.birth).toLocaleDateString('en-GB')}
-              </Text>
+              <Text style={styles.textLeft}>{`${birthday.slice(
+                0,
+                2,
+              )}/${birthday.slice(2, 4)}/${birthday.slice(4)}`}</Text>
+              <View style={styles.rightLine} />
+              <Text style={styles.textLeft}>{gender}</Text>
               <View style={styles.rightLine} />
 
-              <Text style={styles.textLeft}>
-                {dataUser.gender === 1 ? 'Nam' : 'Nữ'}
-              </Text>
+              <Text style={styles.textLeft}>{email}</Text>
               <View style={styles.rightLine} />
 
-              <Text style={styles.textLeft}>{dataUser.email}</Text>
+              <Text style={styles.textLeft}>{address}</Text>
               <View style={styles.rightLine} />
 
-              <Text style={styles.textLeft}>{dataUser.place}</Text>
+              <Text style={styles.textLeft}>{phone}</Text>
               <View style={styles.rightLine} />
 
-              <Text style={styles.textLeft}>{dataUser.phone}</Text>
+              <Text style={styles.textLeft}>{degree}</Text>
               <View style={styles.rightLine} />
-
-              <Text style={styles.textLeft}>{dataUser.company}</Text>
-              <View style={styles.rightLine} />
-
-              <Text style={styles.textLeft}>{dataUser.skill}</Text>
-              
             </View>
           </View>
         </ScrollView>
         <View style={styles.line} />
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.buttonBack}
-            onPress={() => navigation.navigate('MainMessenger')}>
-            <Can/>
-            <Text style={styles.buttonBackText}>    Xóa</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.buttonNext}
-            onPress={() => navigation.navigate('SendCv')}>
-            <Check/>
-            <Text style={styles.buttonNextText}>    Đồng ý</Text>
-          </TouchableOpacity>
-        </View>
+        {route.params.profileType !== 'student' && (
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.buttonBack} onPress={reject}>
+              <Can />
+              <Text style={styles.buttonBackText}> Xóa</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.buttonNext} onPress={approve}>
+              <Check />
+              <Text style={styles.buttonNextText}> Đồng ý</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </View>
   );

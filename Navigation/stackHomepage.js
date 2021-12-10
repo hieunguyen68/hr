@@ -11,6 +11,8 @@ import {DrawerContent} from '../src/homepage/DrawerContent';
 import ChangePass from '../src/individual/ChangePass';
 import Notifications from '../src/homepage/Notification';
 import Messenger from '../src/homepage/Messenger';
+import ManageCV from '../src/manageCV/Main';
+import Profile from '../src/manageCV/Profile';
 
 const Drawer = createStackNavigator();
 const Stack = createStackNavigator();
@@ -50,7 +52,7 @@ function StackHomepage({navigation, route}) {
         name="JobDetails"
         component={JobDetails}
         options={{
-          headerTitle: (props) => <LogoTitle text="Chi tiết việc làm" />,
+          headerTitle: props => <LogoTitle text="Chi tiết việc làm" />,
           headerBackImage: () => <BackIcon color={'black'} />,
         }}
       />
@@ -58,7 +60,7 @@ function StackHomepage({navigation, route}) {
         name="Messenger"
         component={Messenger}
         options={{
-          headerTitle: (props) => <LogoTitle text="Tin nhắn" />,
+          headerTitle: props => <LogoTitle text="Tin nhắn" />,
           headerBackImage: () => <BackIcon color={'black'} />,
           headerRight: () => <CheckMenu color={'black'} />,
         }}
@@ -67,7 +69,7 @@ function StackHomepage({navigation, route}) {
         name="Notifications"
         component={Notifications}
         options={{
-          headerTitle: (props) => <LogoTitle text="Thông báo" />,
+          headerTitle: props => <LogoTitle text="Thông báo" />,
           headerLeft: () => <BackIcon color={'black'} />,
           headerRight: () => <CheckMenu color={'black'} />,
         }}
@@ -76,7 +78,7 @@ function StackHomepage({navigation, route}) {
         name="SendCv"
         component={SendCv}
         options={{
-          headerTitle: (props) => <LogoTitle text="Ứng tuyển" />,
+          headerTitle: props => <LogoTitle text="Ứng tuyển" />,
           headerBackImage: () => <BackIcon color={'black'} />,
         }}
       />
@@ -85,8 +87,26 @@ function StackHomepage({navigation, route}) {
         name="ChangePass"
         component={ChangePass}
         options={{
-          headerTitle: (props) => <LogoTitle text="Đổi mật khẩu" />,
+          headerTitle: props => <LogoTitle text="Đổi mật khẩu" />,
           headerBackImage: () => <BackIcon color={'black'} />,
+        }}
+      />
+      <Stack.Screen
+        name="ManageCV"
+        component={ManageCV}
+        options={{
+          headerTitle: props => <LogoTitle text="Hồ sơ ứng viên" />,
+          headerLeft: () => <BackIcon color={'black'} />,
+          headerRight: () => <CheckMenu color={'black'} />,
+        }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          headerTitle: props => <LogoTitle text="Hồ sơ ứng viên" />,
+          headerLeft: () => <BackIcon color={'black'} />,
+          headerRight: () => <CheckMenu color={'black'} />,
         }}
       />
     </Stack.Navigator>

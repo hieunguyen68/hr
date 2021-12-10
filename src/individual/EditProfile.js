@@ -22,74 +22,41 @@ import {CameraIcon, CheckIcon} from '../../svg/icon';
 import * as ImagePicker from 'react-native-image-picker';
 import TitleBar from '../components/TitleBar';
 import LinearGradient from 'react-native-linear-gradient';
+import {getEndpoint} from '../utils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EditProfile = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const [date, setDate] = useState(new Date(1598051730000));
-  const [birthday, setBirthday] = useState(route.params.birth);
+  const [date, setDate] = useState(
+    route.params.birthday
+      ? Number(new Date(route.params.birthday))
+      : Date.now(),
+  );
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
   const [gender, setGender] = useState(route.params.gender);
   const [email, setEmail] = useState(route.params.email);
   const [phone, setPhone] = useState(route.params.phone);
-  const [company, setCompany] = useState(route.params.company);
-  const [skill, setSkill] = useState(route.params.skill);
-  const [degree, setDegree] = useState(route.params.degree);
-  const [careergoals, setCareergoals] = useState(route.params.careergoals);
-
+  const [companyName, setCompanyName] = useState(route.params.company);
   const [name, setName] = useState(route.params.name);
+  const [website, setWebsite] = useState(route.params.website);
   const [avatar, setAvatar] = useState(route.params.avatar);
-  const [place, setPlace] = useState(route.params.place);
-  const [imageSource, setImageSource] = useState(null);
-  const [UrlAvatar, setUrlAvatar] = useState(
-    'http://elearning.tmgs.vn' + route.params.avatar,
-  );
   const [modalVisible, setModalVisible] = useState(false);
-  console.log(imageSource);
-  const UploadAvatar = async data => {
-    await axios
-      .post(
-        'https://elearning.tmgs.vn/api/user/font/image/base64',
-        {
-          base64: data,
-          name: 'avatar.png',
-          extension: 'png',
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${route.params.UserToken}`,
-          },
-        },
-      )
-      .then(response => {
-        console.log(response);
-        setAvatar(response.data.data.src);
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      });
-  };
+
   const sendUpdateData = async () => {
+    let user = await AsyncStorage.getItem('user');
+    user = JSON.parse(user);
+    console.log(user);
     await axios
-      .post(
-        'https://elearning.tmgs.vn/api/profile/update',
-        {
-          email: email,
-          place: place,
-          phoneNumber: phone,
-          fullName: name,
-          gender: gender,
-          imageUsers: avatar,
-          birthday: birthday,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${route.params.UserToken}`,
-          },
-        },
-      )
+      .put(`${getEndpoint(Platform.OS)}/hr/${user.email}`, {
+        email,
+        gender,
+        phone,
+        companyName,
+        name,
+        website,
+      })
       .then(response => {
         console.log(response);
       })
@@ -101,9 +68,6 @@ const EditProfile = () => {
         console.log('finally');
       });
   };
-  useEffect(() => {
-    setBirthday(date.getTime());
-  }, [date]);
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -127,8 +91,8 @@ const EditProfile = () => {
   function selectImage() {
     let options = {
       title: 'You can choose one image',
-      maxWidth: 256,
-      maxHeight: 256,
+      // maxWidth: 256,
+      // maxHeight: 256,
       noData: true,
       mediaType: 'photo',
       storageOptions: {
@@ -146,10 +110,11 @@ const EditProfile = () => {
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
+        console.log(response);
         let source = {uri: response.uri};
-        UploadAvatar(response.base64);
+        // UploadAvatar(response.base64);
         // ADD THIS
-        setUrlAvatar(source.uri);
+        // setUrlAvatar(source.uri);
       }
     });
   }
@@ -160,16 +125,18 @@ const EditProfile = () => {
         <ImageBackground
           blurRadius={2}
           style={styles.bigAvatar}
-          source={{
-            uri: UrlAvatar,
-          }}>
+          // source={{
+          //   uri: UrlAvatar,
+          // }}
+        >
           <View style={styles.avatarContainer}>
             <View style={styles.circle}>
               <ImageBackground
                 style={styles.logo}
-                source={{
-                  uri: UrlAvatar,
-                }}>
+                // source={{
+                //   uri: UrlAvatar,
+                // }}
+              >
                 <TouchableOpacity
                   style={styles.changeAvatarBut}
                   onPress={() => {
@@ -196,41 +163,17 @@ const EditProfile = () => {
         <ScrollView>
           <View style={styles.container}>
             <View style={styles.InforContainer}>
-            <View style={styles.TwoInforContainer}>
-                <View style={styles.DateInput}>
-                  <Text style={styles.title}>Ngày sinh</Text>
-                  <TouchableOpacity
-                    style={styles.DateBox}
-                    onPress={() => showDatepicker()}>
-                    <Text style={styles.textInput}>
-                      {new Date(birthday)
-                        .toLocaleString('en-GB')
-                        .substring(0, 10)}
-                    </Text>
-                  </TouchableOpacity>
-                  {show && (
-                    <DateTimePicker
-                      testID="dateTimePicker"
-                      value={date}
-                      mode={mode}
-                      is24Hour={true}
-                      display="default"
-                      onChange={onChange}
-                    />
-                  )}
-                </View>
-                <View style={styles.GenderInput}>
-                  <Text style={styles.title}>Giới tính</Text>
-                  <View style={styles.GenderBox}>
-                    <Picker
-                      itemStyle={styles.textInput}
-                      selectedValue={gender}
-                      onValueChange={itemValue => setGender(itemValue)}
-                      style={styles.GenderChoice}>
-                      <Picker.Item label="Nam" value="1" />
-                      <Picker.Item label="Nữ" value="0" />
-                    </Picker>
-                  </View>
+              <View style={styles.EmailInput}>
+                <Text style={styles.title}>Giới tính</Text>
+                <View style={styles.GenderBox}>
+                  <Picker
+                    itemStyle={styles.textInput}
+                    selectedValue={gender}
+                    onValueChange={itemValue => setGender(itemValue)}
+                    style={styles.GenderChoice}>
+                    <Picker.Item label="Nam" value="Nam" />
+                    <Picker.Item label="Nữ" value="Nữ" />
+                  </Picker>
                 </View>
               </View>
               <View style={styles.EmailInput}>
@@ -255,25 +198,14 @@ const EditProfile = () => {
                   />
                 </View>
               </View>
-              
-              <View style={styles.EmailInput}>
-                <Text style={styles.title}>Chức vụ</Text>
-                <View style={styles.emailBox}>
-                  <TextInput
-                    value={company}
-                    onChangeText={companyinput => setCompany(companyinput)}
-                    placeholder={company}
-                    style={styles.textInput}
-                  />
-                </View>
-              </View>
+
               <View style={styles.EmailInput}>
                 <Text style={styles.title}>Công ty</Text>
                 <View style={styles.emailBox}>
                   <TextInput
-                    value={skill}
-                    onChangeText={skillinput => setSkill(skillinput)}
-                    placeholder={skill}
+                    value={companyName}
+                    onChangeText={companyinput => setCompanyName(companyinput)}
+                    placeholder={companyName}
                     style={styles.textInput}
                   />
                 </View>
@@ -283,26 +215,13 @@ const EditProfile = () => {
                 <Text style={styles.title}>Website</Text>
                 <View style={styles.emailBox}>
                   <TextInput
-                    value={degree}
-                    onChangeText={degreeinput => setDegree(degreeinput)}
-                    placeholder={degree}
+                    value={website}
+                    onChangeText={degreeinput => setWebsite(degreeinput)}
+                    placeholder={website}
                     style={styles.textInput}
                   />
                 </View>
               </View>
-              
-              <View style={styles.EmailInput}>
-                <Text style={styles.title}>Mô tả công ty</Text>
-                <View style={styles.emailBox}>
-                  <TextInput
-                    value={degree}
-                    onChangeText={degreeinput => setDegree(degreeinput)}
-                    placeholder={degree}
-                    style={styles.textInput}
-                  />
-                </View>
-              </View>
-              
             </View>
           </View>
         </ScrollView>
@@ -330,7 +249,7 @@ const EditProfile = () => {
           <TouchableOpacity
             style={styles.smallCenteredView}
             onPress={() => {
-              navigation.navigate('LoginScreen'), setModalVisible(false);
+              setModalVisible(false);
             }}>
             <View style={styles.smallModalView}>
               <View style={styles.modalCenter}>

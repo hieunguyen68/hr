@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   StatusBar,
   RefreshControl,
+  Platform,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {scale} from 'react-native-size-matters';
@@ -22,69 +23,74 @@ import HTML from 'react-native-render-html';
 import {useTheme} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {Button} from 'react-native-paper';
+import {getEndpoint} from '../utils';
+
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
 };
 const LocationList = () => {
-  const theme = useTheme();
   const navigation = useNavigation();
   const route = useRoute();
   const [newsID, setNewsID] = useState('');
-  const [count, setCount] = useState(0);
-  const [searchValue, setSearchValue] = useState('');
+  const [data, setData] = useState([]);
 
-  const DATA = [
-    {
-      id: '1',
-      image: (
-        <Image style={styles.image} source={require('../../img/avt.jpg')} />
-      ),
-      title: 'Business Analyst Lương Upto 25M',
-      fullname: 'Nguyễn Văn A',
-      loaihinh: 'Thực tập sinh',
-    },
-    {
-      id: '2',
-      image: (
-        <Image style={styles.image} source={require('../../img/avt.jpg')} />
-      ),
-      title: 'Business Analyst Lương Upto 25M',
-      fullname: 'Nguyễn Văn A',
-      loaihinh: 'Thực tập sinh',
-    },
-    {
-      id: '3',
-      image: (
-        <Image style={styles.image} source={require('../../img/avt.jpg')} />
-      ),
-      title: 'Business Analyst Lương Upto 25M',
-      fullname: 'Nguyễn Văn A',
-      loaihinh: 'Thực tập sinh',
-    },
-  ];
+  useEffect(() => {
+    getData();
+  }, []);
+
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getData();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  const getData = async () => {
+    try {
+      let user = await AsyncStorage.getItem('user');
+      user = JSON.parse(user);
+      const res = await axios.post(
+        `${getEndpoint(Platform.OS)}/hr/getStudents`,
+        {
+          hrEmail: user.email,
+        },
+      );
+      setData(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const renderItem = ({item}) => {
     const backgroundColor = item.id === newsID ? '#2C2F2E' : 'white';
     return (
       <View style={styles.container}>
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate('Profile')
+            navigation.navigate('Profile', {...item, profileType: 'student'})
           }>
           <View style={[styles.itemNew, {backgroundColor}]}>
             <View style={styles.layer}>
-              <View style={styles.imageNew}>{item.image}</View>
+              <View style={styles.imageNew}>
+                <Image
+                  style={styles.image}
+                  source={{
+                    uri: `http://localhost:4000/uploads/avatar/${item.user.avatar}`,
+                  }}
+                />
+              </View>
               <View style={styles.text}>
                 <View style={styles.viewNew}>
                   <Text style={styles.timeText1} numberOfLines={2}>
-                    {item.fullname}
+                    {item.user.name}
                   </Text>
                   <Text style={styles.titleNew} numberOfLines={1}>
-                    {item.title}
+                    {item.post.title}
                   </Text>
                   <View style={styles.iconAndText}>
                     <AuthorIcon />
                     <Text style={styles.authorText}>
-                      Vị trí: {item.loaihinh}
+                      Vị trí: {item.post.role}
                     </Text>
                   </View>
                 </View>
@@ -95,27 +101,15 @@ const LocationList = () => {
       </View>
     );
   };
-  const clearInput = () => {
-    setSearchValue('');
-  };
-  const [refreshing, setRefreshing] = React.useState(false);
 
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    wait(2000).then(() => setRefreshing(false));
-  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.body}>
-        <ScrollView
-          contentContainerStyle={styles.body}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }>
+        <ScrollView contentContainerStyle={styles.body}>
           <FlatList
             style={styles.FlatList}
-            data={DATA}
-            keyExtractor={item => item.id}
+            data={data}
+            keyExtractor={item => item.post._id + item.user.id}
             renderItem={renderItem}
           />
         </ScrollView>

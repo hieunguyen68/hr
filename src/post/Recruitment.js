@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
+  Platform,
+  Alert,
 } from 'react-native';
 import {useRoute} from '@react-navigation/native';
 import {scale} from 'react-native-size-matters';
@@ -15,25 +17,31 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {RadioButton} from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-picker/picker';
+import {getEndpoint} from '../utils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Recruitment = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const [name, setName] = useState('');
-  const [FullName, setFullName] = useState('');
-  const [pass, setPass] = useState('');
-  const [pass1, setPass1] = useState('');
-  const [checked, setChecked] = React.useState('first');
-  const [date, setDate] = useState(new Date(1598051730000));
+  const [salary, setSalary] = useState();
+  const [title, setTitle] = useState();
+  const [expireDate, setExpireDate] = useState(1640970000000);
+  const [type, setType] = useState('Toàn thời gian');
+  const [quantity, setQuantity] = useState();
+  const [exp, setExp] = useState();
+  const [description, setDescription] = useState();
+  const [requirement, setRequirement] = useState();
+  const [companyAddress, setCompanyAddress] = useState();
+  const [companyLocation, setCompanyLocation] = useState();
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
-  const [gender, setGender] = useState('3');
-  const [loaihinh, setLoaihinh] = useState('0');
+  const [gender, setGender] = useState('Nam');
+  const [benefit, setBenefit] = useState();
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
-    setDate(currentDate);
+    setExpireDate(currentDate);
   };
 
   const showMode = currentMode => {
@@ -48,26 +56,35 @@ const Recruitment = () => {
   const showTimepicker = () => {
     showMode('time');
   };
-  const RegisterConfirm = () => {
-    axios
-      .post('https://elearning.tmgs.vn/api/v2/user', {
-        username: name,
-        password: pass,
-        fullName: FullName,
-        gender: '',
-      })
-      .then(response => console.log(response))
-      .catch(err => console.log(err));
+
+  const onSubmit = async () => {
+    try {
+      let user = await AsyncStorage.getItem('user');
+      user = JSON.parse(user);
+      const res = await axios.post(`${getEndpoint(Platform.OS)}/hr/post`, {
+        hrEmail: user.email,
+        salary,
+        title,
+        expireDate: new Date(expireDate).toLocaleDateString(),
+        type,
+        quantity,
+        gender,
+        exp,
+        description,
+        requirement,
+        companyAddress,
+        companyLocation,
+        benefit,
+        id: Math.floor(100000 * Math.random()),
+      });
+      Alert.alert('Đăng tin thành công');
+      navigation.push('Post');
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Đăng tin thất bại');
+    }
   };
-  const ClearInput = () => {
-    setName('');
-    setFullName('');
-    setPass('');
-    setPass1('');
-  };
-  const sao = () => {
-    <Text style={{color: 'red', fontSize: scale(16)}}>*</Text>;
-  };
+
   return (
     <View style={styles.container}>
       <View style={styles.textInputContainerRegister}>
@@ -83,7 +100,7 @@ const Recruitment = () => {
                 </View>
                 <View style={styles.emailBox}>
                   <TextInput
-                    onChangeText={nameinput => setName(nameinput)}
+                    onChangeText={nameinput => setTitle(nameinput)}
                     style={styles.textInput}
                     placeholder={'VD: Business Analyst Lương Upto 25M'}
                   />
@@ -99,7 +116,7 @@ const Recruitment = () => {
 
                 <View style={styles.emailBox}>
                   <TextInput
-                    onChangeText={input => setFullName(input)}
+                    onChangeText={input => setCompanyAddress(input)}
                     style={styles.textInput}
                     placeholder={'VD: Tầng 7 số 58 Tố Hữu , Trung Văn, Hà Nội'}
                   />
@@ -115,7 +132,7 @@ const Recruitment = () => {
 
                 <View style={styles.emailBox}>
                   <TextInput
-                    onChangeText={passinput => setPass(passinput)}
+                    onChangeText={passinput => setCompanyLocation(passinput)}
                     style={styles.textInput}
                     placeholder={'VD: Hà Nội'}
                   />
@@ -141,8 +158,8 @@ const Recruitment = () => {
                     onValueChange={itemValue => setGender(itemValue)}
                     style={styles.GenderChoice}>
                     <Picker.Item label="Không yêu cầu" value="3" />
-                    <Picker.Item label="Nam" value="1" />
-                    <Picker.Item label="Nữ" value="0" />
+                    <Picker.Item label="Nam" value="Nam" />
+                    <Picker.Item label="Nữ" value="Nữ" />
                   </Picker>
                 </View>
               </View>
@@ -155,7 +172,7 @@ const Recruitment = () => {
                 </View>
                 <View style={styles.emailBox}>
                   <TextInput
-                    onChangeText={nameinput => setName(nameinput)}
+                    onChangeText={nameinput => setSalary(nameinput)}
                     style={styles.textInput}
                     placeholder={'Chọn mức lương'}
                   />
@@ -170,7 +187,7 @@ const Recruitment = () => {
                 </View>
                 <View style={styles.emailBox}>
                   <TextInput
-                    onChangeText={nameinput => setName(nameinput)}
+                    onChangeText={nameinput => setQuantity(nameinput)}
                     style={styles.textInput}
                     placeholder={''}
                   />
@@ -189,16 +206,21 @@ const Recruitment = () => {
                     style={styles.textInput}
                     placeholder={'Chọn loại hình'}
                   /> */}
-                   <Picker
+                  <Picker
                     itemStyle={styles.textInput}
-                    selectedValue={loaihinh}
-                    onValueChange={itemValue => setLoaihinh(itemValue)}
+                    selectedValue={type}
+                    onValueChange={itemValue => setType(itemValue)}
                     style={styles.GenderChoice}>
-                    <Picker.Item label="Toàn thời gian" value="0" />
-                    <Picker.Item label="Bán thời gian" value="1" />
-                    <Picker.Item label="Thực tập" value="2" />
-                    <Picker.Item label="Remote - Làm việc từ xa" value="3" />
-
+                    <Picker.Item
+                      label="Toàn thời gian"
+                      value="Toàn thời gian"
+                    />
+                    <Picker.Item label="Bán thời gian" value="Bán thời gian" />
+                    <Picker.Item label="Thực tập" value="Thực tập" />
+                    <Picker.Item
+                      label="Remote - Làm việc từ xa"
+                      value="Remote - Làm việc từ xa"
+                    />
                   </Picker>
                 </View>
               </View>
@@ -211,7 +233,7 @@ const Recruitment = () => {
                 </View>
                 <View style={styles.emailBox}>
                   <TextInput
-                    onChangeText={nameinput => setName(nameinput)}
+                    onChangeText={nameinput => setExp(nameinput)}
                     style={styles.textInput}
                     placeholder={''}
                   />
@@ -235,7 +257,7 @@ const Recruitment = () => {
                       style={styles.textInput}
                       onPress={() => showDatepicker()}>
                       <Text style={styles.textInput}>
-                        {new Date(date)
+                        {new Date(expireDate)
                           .toLocaleString('en-GB')
                           .substring(0, 10)}
                       </Text>
@@ -243,7 +265,7 @@ const Recruitment = () => {
                     {show && (
                       <DateTimePicker
                         testID="dateTimePicker"
-                        value={date}
+                        value={expireDate}
                         mode={mode}
                         is24Hour={true}
                         display="default"
@@ -251,21 +273,6 @@ const Recruitment = () => {
                       />
                     )}
                   </View>
-                </View>
-              </View>
-              <View style={styles.EmailInput}>
-                <View style={styles.title}>
-                  <Text style={{color: 'black', fontSize: scale(16)}}>
-                    Loại hình làm việc{' '}
-                  </Text>
-                  <Text style={{color: 'red', fontSize: scale(16)}}>*</Text>
-                </View>
-                <View style={styles.emailBox}>
-                  <TextInput
-                    onChangeText={nameinput => setName(nameinput)}
-                    style={styles.textInput}
-                    placeholder={''}
-                  />
                 </View>
               </View>
               <View style={styles.EmailInput1}>
@@ -277,7 +284,7 @@ const Recruitment = () => {
                 </View>
                 <View style={styles.emailBox1}>
                   <TextInput
-                    onChangeText={nameinput => setName(nameinput)}
+                    onChangeText={nameinput => setDescription(nameinput)}
                     style={styles.textInput}
                     placeholder={'Mô tả công việc phải làm dựa theo vị trí'}
                   />
@@ -292,7 +299,7 @@ const Recruitment = () => {
                 </View>
                 <View style={styles.emailBox1}>
                   <TextInput
-                    onChangeText={nameinput => setName(nameinput)}
+                    onChangeText={nameinput => setRequirement(nameinput)}
                     style={styles.textInput}
                     placeholder={
                       'Các kỹ năng chuyên môn của ứng viên để đáp ứng nhu cầu công việc, kỹ năng được ưu tiên của nhân viên...vv'
@@ -310,7 +317,7 @@ const Recruitment = () => {
 
                 <View style={styles.emailBox1}>
                   <TextInput
-                    onChangeText={nameinput => setName(nameinput)}
+                    onChangeText={nameinput => setBenefit(nameinput)}
                     style={styles.textInput}
                     placeholder={
                       'Các quyền lợi của ứng viên được hưởng khi được nhận vào công ty'
@@ -321,7 +328,7 @@ const Recruitment = () => {
             </View>
           </View>
           <TouchableOpacity
-            onPress={() => [RegisterConfirm(), ClearInput()]}
+            onPress={onSubmit}
             style={[
               styles.button,
               {

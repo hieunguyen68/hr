@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   StatusBar,
   RefreshControl,
+  Platform,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {scale} from 'react-native-size-matters';
@@ -36,6 +37,8 @@ import HTML from 'react-native-render-html';
 import {useTheme} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {Button} from 'react-native-paper';
+import {getEndpoint} from '../utils';
+
 const wait = timeout => {
   return new Promise(resolve => setTimeout(resolve, timeout));
 };
@@ -46,64 +49,64 @@ const Post = () => {
   const [newsID, setNewsID] = useState('');
   const [count, setCount] = useState(0);
   const [searchValue, setSearchValue] = useState('');
+  const [data, setData] = useState([]);
+  const [user, setUser] = useState();
 
-  const DATA = [
-    {
-      id: '1',
-      image: (
-        <Image
-          style={styles.image}
-          source={require('../../img/cooftech.webp')}
-        />
-      ),
-      title: 'Business Analyst Lương Upto 25M',
-      companyName: 'Công Ty Cổ Phần Công Nghệ SOPEN Việt Nam',
-      companyPalace: 'Hà Nội',
-      pay: 'Tới 25 triệu',
-      date: '09/11/2021',
-      khuvuc:
-        'Tầng 7 sảnh A3 tòa Ecolife Capitol 58 Tố Hữu , Trung Văn, Hà Nội',
-      hinhthuc: 'Toàn thời gian',
-      soluong: '2 người',
-      gioitinh: 'không yêu cầu',
-      chucvu: 'Nhân viên',
-      kinhnghiem: 'Dưới 1 năm',
-      motacv:
-        'Thiết kế, phát triển và tối ưu hóa hiệu suất của các sản phẩm trên Mobile App',
-      yeucaucv: 'Tốt nghiệp ĐH trở lên, ưu tiên chuyên ngành CNTT.',
-      quyenloicv:
-        'Cơ hội học hỏi và phát triển, tiếp cận và áp dụng các công nghệ mới.',
-    },
-    {
-      id: '2',
-      image: (
-        <Image
-          style={styles.image}
-          source={require('../../img/cooftech.webp')}
-        />
-      ),
-      title: 'Mobile Developer - Flutter (Upto $1500)',
-      companyName: 'Công Ty Cổ Phần Cooftech',
-      companyPalace: 'Hà Nội',
-      pay: 'Tới 30 triệu',
-      date: '10/11/2021',
-    },
-    {
-      id: '3',
-      image: (
-        <Image
-          style={styles.image}
-          source={require('../../img/cooftech.webp')}
-        />
-      ),
-      title: 'Lập Trình Viên PHP - Mobile Game Lương Upto 18M',
-      companyName: 'Công Ty TNHH Ambition Việt Nam',
-      companyPalace: 'Hồ Chí Minh',
-      pay: '18-20 triệu',
-      date: '30/11/2021',
-    },
-   
-  ];
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  const getUser = async () => {
+    try {
+      const user = await AsyncStorage.getItem('user');
+      setUser(JSON.parse(user));
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    if (user) {
+      getData();
+    }
+  }, [user]);
+
+  const getData = async () => {
+    try {
+      const res = await axios.get(
+        `${getEndpoint(Platform.OS)}/hr/post/${user.email}`,
+      );
+      setData(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deletePost = async id => {
+    try {
+      Alert.alert('Cảnh báo', 'Bạn chắc chắn muốn xoá?', [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'OK', onPress: () => deletePostById(id)},
+      ]);
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Có lỗi xảy ra');
+    }
+  };
+
+  const deletePostById = async id => {
+    console.log(id);
+    const res = await axios.delete(`${getEndpoint(Platform.OS)}/hr/post`, {
+      data: {
+        _id: id,
+      },
+    });
+    Alert.alert('Xoá tin thành công');
+    getData();
+  };
+
   const renderItem = ({item}) => {
     const backgroundColor = item.id === newsID ? '#2C2F2E' : 'white';
     return (
@@ -117,36 +120,19 @@ const Post = () => {
                 </Text>
                 <View style={styles.iconAndText}>
                   <MoneyIcon />
-                  <Text style={styles.timeText}>{item.pay}</Text>
+                  <Text style={styles.timeText}>{item.salary}</Text>
                 </View>
                 <View style={styles.iconAndText}>
                   <Clock />
                   <Text style={styles.timeText}>
-                    Hạn nhận hồ sơ: {item.date}
+                    Hạn nhận hồ sơ: {item.expireDate}
                   </Text>
                 </View>
                 <View>
                   <TouchableOpacity
                     style={styles.Edit}
                     onPress={() =>
-                      navigation.navigate('EditRecruitment', {
-                        id: item.id,
-                        image: item.image,
-                        title: item.title,
-                        companyName: item.companyName,
-                        companyPalace: item.companyPalace,
-                        pay: item.pay,
-                        date: item.date,
-                        khuvuc: item.khuvuc,
-                        hinhthuc: item.hinhthuc,
-                        soluong: item.soluong,
-                        gioitinh: item.gioitinh,
-                        chucvu: item.chucvu,
-                        kinhnghiem: item.kinhnghiem,
-                        motacv: item.motacv,
-                        quyenloicv: item.quyenloicv,
-                        yeucaucv: item.yeucaucv,
-                      })
+                      navigation.navigate('EditRecruitment', item)
                     }>
                     <Edit />
                     <Text style={styles.timeText}> Sửa tin</Text>
@@ -156,7 +142,9 @@ const Post = () => {
             </View>
           </View>
           <View style={styles.can}>
-            <Can />
+            <TouchableOpacity onPress={() => deletePost(item._id)}>
+              <Can />
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -181,14 +169,14 @@ const Post = () => {
           }>
           <FlatList
             style={styles.FlatList}
-            data={DATA}
-            keyExtractor={item => item.id}
+            data={data}
+            keyExtractor={item => item._id}
             renderItem={renderItem}
           />
         </ScrollView>
       </View>
       <TouchableOpacity
-       onPress={() => navigation.navigate('Recruitment')}
+        onPress={() => navigation.navigate('Recruitment')}
         style={styles.touchableOpacityStyle}>
         <Plus />
       </TouchableOpacity>
