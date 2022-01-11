@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   StatusBar,
   RefreshControl,
+  SafeAreaView,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {scale} from 'react-native-size-matters';
@@ -34,8 +35,8 @@ import {
 import HTML from 'react-native-render-html';
 import {useTheme} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
-const wait = (timeout) => {
-  return new Promise((resolve) => setTimeout(resolve, timeout));
+const wait = timeout => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
 };
 const MainHomepage = () => {
   const theme = useTheme();
@@ -196,7 +197,7 @@ const MainHomepage = () => {
       <StatusBar barStyle={theme.dark ? 'light-content' : 'dark-content'} />
       <View style={styles.searchBar}>
         <TouchableOpacity onPress={() => navigation.navigate('DrawerContent')}>
-          <MenuIcon  color="#000" />
+          <MenuIcon color="#000" />
         </TouchableOpacity>
         <View style={styles.SearchArea}>
           <View style={styles.SearchIconArea}>
@@ -212,7 +213,7 @@ const MainHomepage = () => {
               style={styles.inputText}
               placeholder={'Tìm kiếm'}
               value={searchValue}
-              onChangeText={(input) => setSearchValue(input)}
+              onChangeText={input => setSearchValue(input)}
             />
           </View>
           <View style={styles.CancelIconArea}>
@@ -225,12 +226,10 @@ const MainHomepage = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Messenger')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Messenger')}>
           <ChatIcon color="black" />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Notifications')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
           <BellIcon color="black" />
         </TouchableOpacity>
       </View>
@@ -245,7 +244,7 @@ const MainHomepage = () => {
           <FlatList
             style={styles.FlatList}
             data={DATA}
-            keyExtractor={(item) => item.id}
+            keyExtractor={item => item.id}
             renderItem={renderItem}
           />
         </ScrollView>
