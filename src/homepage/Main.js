@@ -9,7 +9,7 @@ import {
   TextInput,
   StatusBar,
   RefreshControl,
-  Alert,
+  SafeAreaView,
   Image,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   FlatList,
   StyleSheet,
   Dimensions,
+  Platform,
 } from 'react-native';
 import {
   NavigationContainer,
@@ -14,71 +15,46 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import Swipeout from 'react-native-swipeout';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+// import Icon from 'react-natiuve-vector-icons/FontAwesome5';
 import {Can} from '../../svg/icon';
 const {width} = Dimensions.get('window');
+import {getEndpoint} from '../utils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
-const Messenger = props => {
+const StackMessenger = props => {
   console.log(props);
   const route = useRoute();
   const navigation = useNavigation();
+  const [data, setData] = useState([]);
 
-  const data = [
-    {
-      id: 1,
-      avatar:
-        'http://woridnews.com/wp-content/uploads/2016/10/cd3e35dbcf23269780779b3f7b9e2fcc.png',
-      name: 'số 1',
-      description: 'waved at you!',
-    },
-    {
-      id: 2,
-      avatar:
-        'https://d1o7cxaf8di5ts.cloudfront.net/file/brand/member-girlcrush-BM.jpg?d=200',
-      name: 'số 2',
-      description:
-        'Anh muốn tặng em trái tim này và em hãy giữ nó, bởi anh rất vụng về, anh sợ rằng anh sẽ làm mất hoặc dễ dàng tặng nó cho một ai khác',
-    },
-    {
-      id: 3,
-      avatar:
-        'https://qph.fs.quoracdn.net/main-qimg-bd14ad5123f2a0b5b7fd457a18e23de8',
-      name: 'số 3',
-      description:
-        'Nếu em dám, hãy nắm lấy tay anh và dẫn anh đến trái tim của em. Anh muốn cảm nhận tình yêu của em.',
-    },
-    {
-      id: 4,
-      avatar:
-        'https://pbs.twimg.com/profile_images/652669289326092288/RsXc7UnS_400x400.jpg',
-      name: ' số 4',
-      description:
-        'Anh thức dậy vào mỗi buổi sáng với sự phấn khích của một đứa trẻ vào ngày Giáng sinh, chỉ để biết rằng anh vẫn ở cạnh em.',
-    },
-    {
-      id: 5,
-      avatar:
-        'https://bellanyc.com/wp-content/uploads/2017/06/blake-lively.jpg',
-      name: 'số 5',
-      description:
-        'Em là nguồn cảm hứng đằng sau tất cả những gì anh làm, làm nguồn gốc của những điều tốt lành trong cuộc sống của anh',
-    },
-  ];
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    try {
+      let user = await AsyncStorage.getItem('user');
+      user = JSON.parse(user);
+      const res = await axios.get(
+        `${getEndpoint(Platform.OS)}/hr/listUserMessage/${user.email}`,
+      );
+      setData(
+        res.data.map(i => ({
+          id: i._id,
+          avatar:
+            'http://woridnews.com/wp-content/uploads/2016/10/cd3e35dbcf23269780779b3f7b9e2fcc.png',
+          name: i.userName,
+          description: i.content,
+          userId: i.userId,
+        })),
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const renderItem = ({item}) => {
-    //     constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //         activeRowKey: null, //set item active
-    //         numberOfRefresh: 0,
-    //     };
-    // }
-    // const item = this.props;
-    // _onOpen = () => {
-    //   this.setState({
-    //     activeRowKey: item.item.key,
-    //   });
-    // };
     _onClose = () => {
       if (this.state.activeRowKey != null) {
         this.setState({
@@ -87,12 +63,6 @@ const Messenger = props => {
       }
     };
     var swipeSettings = [
-      // autoClose: true, //sẽ tự động đóng khi ta click vào buton nào đó trong item được swipe
-      // onOpen: this._onOpen, //khi open swipe thì nên set row nào được active để tránh nhầm lẫn khi ta click sự kiện bên trong các item.
-      // onClose: this._onClose, //xóa row active
-
-      //tiếp theo ta sẽ làm swipe phía bên trái
-
       {
         onPress: ({}) => {},
         component: (
@@ -106,8 +76,9 @@ const Messenger = props => {
     return (
       <Swipeout right={swipeSettings} backgroundColor="white">
         <TouchableOpacity
-          // onPress={() => navigation.navigate('DirectMessenger', route.params)}
-          >
+          onPress={() =>
+            navigation.navigate('DirectMessenger', {userId: item.userId})
+          }>
           <View style={styles.container}>
             <View style={styles.bgAvatar}>
               <Image source={{uri: item.avatar}} style={styles.avatar} />
@@ -127,19 +98,16 @@ const Messenger = props => {
 
   return (
     <View style={styles.wrapper}>
-      {/* <View>
-        <Text style={styles.title}>My Crush</Text>
-      </View> */}
       <FlatList
         data={data}
-        keyExtractor={item => item._id}
+        keyExtractor={item => item.userId}
         renderItem={renderItem}
       />
     </View>
   );
 };
 
-export default Messenger;
+export default StackMessenger;
 
 const styles = StyleSheet.create({
   container: {flex: 1},

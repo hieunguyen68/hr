@@ -27,7 +27,7 @@ const Profile = () => {
   const {name, birthday, gender, email, address, phone, degree} =
     route.params.user;
   const navigation = useNavigation();
-
+  console.log(route.params.user);
   useEffect(() => {
     getUser();
   }, []);
@@ -75,7 +75,9 @@ const Profile = () => {
         <View style={styles.circle}>
           <Image
             style={styles.logo}
-            source={require('../../img/logohvktmm.png')}
+            source={{
+              uri: `http://localhost:4000/uploads/avatar/${avatar}`,
+            }}
           />
         </View>
       </View>

@@ -100,14 +100,14 @@ const CandidateProfile = () => {
   return (
     <View style={styles.container}>
       <View style={styles.body}>
-        <ScrollView contentContainerStyle={styles.body}>
+        <View contentContainerStyle={styles.body}>
           <FlatList
             style={styles.FlatList}
             data={data}
             keyExtractor={item => item.user.id + item.post._id}
             renderItem={renderItem}
           />
-        </ScrollView>
+        </View>
       </View>
     </View>
   );

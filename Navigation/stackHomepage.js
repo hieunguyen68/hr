@@ -13,6 +13,7 @@ import Notifications from '../src/homepage/Notification';
 import Messenger from '../src/homepage/Messenger';
 import ManageCV from '../src/manageCV/Main';
 import Profile from '../src/manageCV/Profile';
+import DirectMessenger from '../src/homepage/DirectMessage';
 
 const Drawer = createStackNavigator();
 const Stack = createStackNavigator();
@@ -59,6 +60,15 @@ function StackHomepage({navigation, route}) {
       <Stack.Screen
         name="Messenger"
         component={Messenger}
+        options={{
+          headerTitle: props => <LogoTitle text="Tin nhắn" />,
+          headerBackImage: () => <BackIcon color={'black'} />,
+          headerRight: () => <CheckMenu color={'black'} />,
+        }}
+      />
+      <Stack.Screen
+        name="DirectMessenger"
+        component={DirectMessenger}
         options={{
           headerTitle: props => <LogoTitle text="Tin nhắn" />,
           headerBackImage: () => <BackIcon color={'black'} />,
