@@ -23,9 +23,19 @@ import {getEndpoint} from '../utils';
 
 const Profile = () => {
   const route = useRoute();
+  const [user, setUser] = useState();
   const {name, birthday, gender, email, address, phone, degree} =
     route.params.user;
   const navigation = useNavigation();
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  const getUser = async () => {
+    const user = await AsyncStorage.getItem('user');
+    setUser(JSON.parse(user));
+  };
 
   const approve = async () => {
     try {
@@ -33,7 +43,14 @@ const Profile = () => {
         userId: route.params.user.id,
         postId: route.params.post._id,
       });
-      navigation.navigate('LocationList');
+      await axios.post(`${getEndpoint(Platform.OS)}/message`, {
+        hrEmail: user.email,
+        userId: route.params.user.id,
+        content: 'Chúc mừng, CV của bạn đã được duyệt',
+        to: route.params.user.id,
+        from: user.email,
+      });
+      navigation.navigate('DirectMessenger', {userId: route.params.user.id});
     } catch (error) {
       console.log(error);
       Alert.alert('Có lỗi xảy ra');

@@ -48,7 +48,7 @@ const Recruitment = () => {
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
-    setExpireDate(currentDate);
+    setDate(currentDate);
   };
 
   const showMode = currentMode => {

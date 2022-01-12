@@ -36,10 +36,10 @@ function StackCv(props) {
         component={CandidateProfile}
         initialParams={{data: props.data}}
         options={{
-          tabBarLabel: 'HỒ SƠ ỨNG VIÊN',
+          tabBarLabel: 'DANH SÁCH ỨNG VIÊN ỨNG TUYỂN',
           tabBarIcon: ({color, size, fontWeight}) => (
             <MaterialCommunityIcons
-              name="Thông tin"
+              name="Hồ sơ ứng viên"
               color={rgb(238, 49, 40)}
               size={16}
               fontWeight={'bold'}
@@ -52,10 +52,10 @@ function StackCv(props) {
         component={LocationList}
         initialParams={{data: props.data}}
         options={{
-          tabBarLabel: 'DANH SÁCH SINH VIÊN',
+          tabBarLabel: 'DANH SÁCH SINH VIÊN HẸN PHỎNG VẤN',
           tabBarIcon: ({color, size}) => (
             <MaterialCommunityIcons
-              name="Công ty"
+              name="Danh sách sinh viên"
               color={rgb(238, 49, 40)}
               size={16}
             />

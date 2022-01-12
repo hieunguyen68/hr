@@ -33,9 +33,11 @@ const LocationList = () => {
   const route = useRoute();
   const [newsID, setNewsID] = useState('');
   const [data, setData] = useState([]);
+  console.log(route.data);
 
   useEffect(() => {
     getData();
+    
   }, []);
 
   React.useEffect(() => {
@@ -56,6 +58,7 @@ const LocationList = () => {
         },
       );
       setData(res.data);
+
     } catch (error) {
       console.log(error);
     }
@@ -105,14 +108,14 @@ const LocationList = () => {
   return (
     <View style={styles.container}>
       <View style={styles.body}>
-        <ScrollView contentContainerStyle={styles.body}>
+        <View contentContainerStyle={styles.body}>
           <FlatList
             style={styles.FlatList}
             data={data}
             keyExtractor={item => item.post._id + item.user.id}
             renderItem={renderItem}
           />
-        </ScrollView>
+        </View>
       </View>
     </View>
   );

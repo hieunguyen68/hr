@@ -70,8 +70,8 @@ function StackHomepage({navigation, route}) {
         component={Notifications}
         options={{
           headerTitle: props => <LogoTitle text="Thông báo" />,
-          headerLeft: () => <BackIcon color={'black'} />,
-          headerRight: () => <CheckMenu color={'black'} />,
+          headerBackImage: () => <BackIcon color={'black'} />,
+        
         }}
       />
       <Stack.Screen

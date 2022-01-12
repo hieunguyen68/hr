@@ -4,14 +4,13 @@ import {
   Text,
   TouchableOpacity,
   FlatList,
-  Image,
+  Platform,
   StyleSheet,
   TextInput,
-  Modal,
-  Alert,
-  ActivityIndicator,
   StatusBar,
   RefreshControl,
+  Alert,
+  Image,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {scale} from 'react-native-size-matters';
@@ -24,135 +23,56 @@ import {
   BellIcon,
   SearchIcon,
   CancelIcon,
-  DateAndTimeIcon,
-  ClockIcon,
   Clock,
-  Messenger,
-  SendIcon,
   ChatIcon,
 } from '../../svg/icon';
-import HTML from 'react-native-render-html';
+import {getEndpoint} from '../utils';
 import {useTheme} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
-const wait = (timeout) => {
-  return new Promise((resolve) => setTimeout(resolve, timeout));
+const wait = timeout => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
 };
 const MainHomepage = () => {
   const theme = useTheme();
   const navigation = useNavigation();
-  const route = useRoute();
   const [newsID, setNewsID] = useState('');
-  const [dataCourse, setDataCourse] = useState([]);
-  const [getting, setGetting] = useState(false);
-  const [token, setToken] = useState('');
   const [count, setCount] = useState(0);
   const [searchValue, setSearchValue] = useState('');
-  const [modalVisible, setModalVisible] = useState(false);
-  const [CateId, setCateId] = useState('');
-  const [stopFetchMore, setStopFetchMore] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [param, setParam] = useState(6);
-  const [dataJob, setDataJob] = useState([]);
+  const [listJob, setListJob] = useState([]);
 
-  const DATA = [
-    {
-      id: '1',
-      image: (
-        <Image
-          style={styles.image}
-          source={require('../../img/cooftech.webp')}
-        />
-      ),
-      title: 'Business Analyst Lương Upto 25M',
-      companyName: 'Công Ty Cổ Phần Công Nghệ SOPEN Việt Nam',
-      companyPalace: 'Hà Nội',
-      pay: 'Tới 25 triệu',
-      date: '09/11/2021',
-      khuvuc:
-        'Tầng 7 sảnh A3 tòa Ecolife Capitol 58 Tố Hữu , Trung Văn, Hà Nội',
-      hinhthuc: 'Toàn thời gian',
-      soluong: '2 người',
-      gioitinh: 'không yêu cầu',
-      chucvu: 'Nhân viên',
-      kinhnghiem: 'Dưới 1 năm',
-      motacv:
-        'Thiết kế, phát triển và tối ưu hóa hiệu suất của các sản phẩm trên Mobile App',
-      yeucaucv: 'Tốt nghiệp ĐH trở lên, ưu tiên chuyên ngành CNTT.',
-      quyenloicv:
-        'Cơ hội học hỏi và phát triển, tiếp cận và áp dụng các công nghệ mới.',
-    },
-    {
-      id: '2',
-      image: (
-        <Image
-          style={styles.image}
-          source={require('../../img/cooftech.webp')}
-        />
-      ),
-      title: 'Mobile Developer - Flutter (Upto $1500)',
-      companyName: 'Công Ty Cổ Phần Cooftech',
-      companyPalace: 'Hà Nội',
-      pay: 'Tới 30 triệu',
-      date: '10/11/2021',
-    },
-    {
-      id: '3',
-      image: (
-        <Image
-          style={styles.image}
-          source={require('../../img/cooftech.webp')}
-        />
-      ),
-      title: 'Lập Trình Viên PHP - Mobile Game Lương Upto 18M',
-      companyName: 'Công Ty TNHH Ambition Việt Nam',
-      companyPalace: 'Hồ Chí Minh',
-      pay: '18-20 triệu',
-      date: '30/11/2021',
-    },
-    {
-      id: '4',
-      image: (
-        <Image
-          style={styles.image}
-          source={require('../../img/cooftech.webp')}
-        />
-      ),
-      title:
-        'IOS Deverlopers (Objectivec, Swift) Thực Tập Sinh Có Thể Ứng Tuyển',
-      companyName: 'Công Ty Cổ Phần Solar Việt Nam',
-      companyPalace: 'Hà Nội',
-      pay: 'Tới 40 triệu',
-      date: '15/11/2021',
-    },
-  ];
+  useEffect(() => {
+    getListJob();
+  }, []);
+
+  const getListJob = async () => {
+    try {
+      const res = await axios.get(`${getEndpoint(Platform.OS)}/post`);
+      setListJob(res.data);
+      console.log(res.data);
+    } catch (error) {
+      Alert.alert('An error occurred');
+    }
+  };
+
+
   const renderItem = ({item}) => {
     const backgroundColor = item.id === newsID ? '#2C2F2E' : 'white';
     return (
       <View style={styles.container}>
         <TouchableOpacity
           style={[styles.itemNew, {backgroundColor}]}
-          onPress={() =>
-            navigation.navigate('JobDetails', {
-              id: item.id,
-              image: item.image,
-              title: item.title,
-              companyName: item.companyName,
-              companyPalace: item.companyPalace,
-              pay: item.pay,
-              date: item.date,
-              khuvuc: item.khuvuc,
-              hinhthuc: item.hinhthuc,
-              soluong: item.soluong,
-              gioitinh: item.gioitinh,
-              chucvu: item.chucvu,
-              kinhnghiem: item.kinhnghiem,
-              motacv: item.motacv,
-              quyenloicv: item.quyenloicv,
-              yeucaucv: item.yeucaucv,
-            })
-          }>
+          onPress={() => navigation.navigate('JobDetails', item)}>
           <View style={styles.layer}>
-            <View style={styles.imageNew}>{item.image}</View>
+            <View style={styles.imageNew}>
+              <Image
+                style={styles.image}
+                source={{
+                  uri: `http://${
+                    Platform.OS === 'ios' ? 'localhost' : '192.168.0.108'
+                  }:4000/uploads/post/${item.image}`,
+                }}
+              />
+            </View>
             <View style={styles.text}>
               <View style={styles.viewNew}>
                 <Text style={styles.timeText1} numberOfLines={2}>
@@ -163,16 +83,16 @@ const MainHomepage = () => {
                 </Text>
                 <View style={styles.iconAndText}>
                   <AuthorIcon />
-                  <Text style={styles.authorText}>{item.companyPalace}</Text>
+                  <Text style={styles.authorText}>{item.companyLocation}</Text>
                 </View>
                 <View style={styles.layer}>
                   <View style={styles.iconAndText}>
                     <MoneyIcon />
-                    <Text style={styles.timeText}>{item.pay}</Text>
+                    <Text style={styles.timeText}>{item.salary}</Text>
                   </View>
                   <View style={styles.iconday}>
                     <Clock />
-                    <Text style={styles.timeText}>{item.date}</Text>
+                    <Text style={styles.timeText}>{item.expireDate}</Text>
                   </View>
                 </View>
               </View>
@@ -196,7 +116,7 @@ const MainHomepage = () => {
       <StatusBar barStyle={theme.dark ? 'light-content' : 'dark-content'} />
       <View style={styles.searchBar}>
         <TouchableOpacity onPress={() => navigation.navigate('DrawerContent')}>
-          <MenuIcon  color="#000" />
+          <MenuIcon height={30} width={30} color="#000" />
         </TouchableOpacity>
         <View style={styles.SearchArea}>
           <View style={styles.SearchIconArea}>
@@ -212,7 +132,7 @@ const MainHomepage = () => {
               style={styles.inputText}
               placeholder={'Tìm kiếm'}
               value={searchValue}
-              onChangeText={(input) => setSearchValue(input)}
+              onChangeText={input => setSearchValue(input)}
             />
           </View>
           <View style={styles.CancelIconArea}>
@@ -225,30 +145,25 @@ const MainHomepage = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Messenger')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Messenger')}>
           <ChatIcon color="black" />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Notifications')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
           <BellIcon color="black" />
         </TouchableOpacity>
       </View>
 
-      <View style={styles.body}>
-        <View style={styles.imgBlack} />
-        <ScrollView
-          contentContainerStyle={styles.body}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }>
-          <FlatList
-            style={styles.FlatList}
-            data={DATA}
-            keyExtractor={(item) => item.id}
-            renderItem={renderItem}
-          />
-        </ScrollView>
+      <View
+        contentContainerStyle={styles.body}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
+        <FlatList
+          style={styles.FlatList}
+          data={listJob}
+          keyExtractor={item => item.id}
+          renderItem={renderItem}
+        />
       </View>
     </View>
   );

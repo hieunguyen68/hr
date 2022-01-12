@@ -38,15 +38,11 @@ const MainIndividual = () => {
       <TitleBar title1={'Thông tin cá nhân'} />
       <View style={styles.avatarContainer}>
         <View style={styles.circle}>
-          {/* <Image
-            style={styles.logo}
-            source={{
-              uri: 'http://elearning.tmgs.vn' + route.params.avatar,
-            }}
-          /> */}
           <Image
             style={styles.logo}
-            source={require('../../img/logohvktmm.png')}
+            source={{
+              uri: `http://192.168.0.108:4000/uploads/avatar/${user.avatar}`,
+            }}
           />
         </View>
       </View>
@@ -61,8 +57,8 @@ const MainIndividual = () => {
               <Text style={styles.textLeft}>Ngày Sinh</Text>
               <View style={styles.leftLine} />
 
-              <Text style={styles.textLeft}>Giới Tính</Text>
-              <View style={styles.leftLine} />
+              {/* <Text style={styles.textLeft}>Giới Tính</Text>
+              <View style={styles.leftLine} /> */}
 
               <Text style={styles.textLeft}>E-mail</Text>
               <View style={styles.leftLine} />
@@ -91,9 +87,9 @@ const MainIndividual = () => {
                 )}
               </Text>
               <View style={styles.rightLine} />
-
+              {/* 
               <Text style={styles.textLeft}>{user.gender}</Text>
-              <View style={styles.rightLine} />
+              <View style={styles.rightLine} /> */}
 
               <Text style={styles.textLeft}>{user.email}</Text>
               <View style={styles.rightLine} />

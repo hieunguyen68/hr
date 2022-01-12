@@ -33,8 +33,6 @@ function StackPost({navigation, route}) {
         component={Post}
         options={{
           headerTitle: (props) => <LogoTitle text="Tin đã đăng" />,
-          headerLeft: () => <BackIcon color={'black'} />,
-          headerRight: () => <CheckMenu color={'black'} />,
         }}
       />
        <Stack.Screen
@@ -42,7 +40,7 @@ function StackPost({navigation, route}) {
         component={Recruitment}
         options={{
           headerTitle: (props) => <LogoTitle text="Tin tuyển dụng" />,
-          headerLeft: () => <BackIcon color={'black'} />,
+          headerBackImage: () => <BackIcon color={'black'} />,
         }}
       />
        <Stack.Screen
@@ -50,7 +48,7 @@ function StackPost({navigation, route}) {
         component={EditRecruitment}
         options={{
           headerTitle: (props) => <LogoTitle text="Sửa tin" />,
-          headerLeft: () => <BackIcon color={'black'} />,
+          headerBackImage: () => <BackIcon color={'black'} />,
         }}
       />
     </Stack.Navigator>

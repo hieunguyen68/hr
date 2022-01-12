@@ -32,8 +32,8 @@ function StackManageCV() {
         component={ManageCV}
         options={{
           headerTitle: (props) => <LogoTitle text="Hồ sơ ứng viên" />,
-          headerLeft: () => <BackIcon color={'black'} />,
-          headerRight: () => <CheckMenu color={'black'} />,
+          // headerLeft: () => <BackIcon color={'black'} />,
+          // headerRight: () => <CheckMenu color={'black'} />,
         }}
       />
       <Stack.Screen
@@ -41,8 +41,7 @@ function StackManageCV() {
         component={Profile}
         options={{
           headerTitle: (props) => <LogoTitle text="Hồ sơ ứng viên" />,
-          headerLeft: () => <BackIcon color={'black'} />,
-          headerRight: () => <CheckMenu color={'black'} />,
+          headerBackImage: () => <BackIcon color={'black'} />,
         }}
       />
     </Stack.Navigator>

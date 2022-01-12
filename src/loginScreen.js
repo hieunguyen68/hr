@@ -147,7 +147,7 @@ const LoginScreen = ({navigation}) => {
         <View style={styles.action}>
           <UserTK />
           <TextInput
-            placeholder="Tên đăng nhập"
+            placeholder="Nhập Email"
             placeholderTextColor="#666666"
             style={[
               styles.textInput,

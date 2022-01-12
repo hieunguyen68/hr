@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 
 import {View, StyleSheet, Image, AsyncStorage} from 'react-native';
 import {
@@ -34,20 +34,34 @@ export function DrawerContent({props, navigation}) {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   // const {signOut, toggleTheme} = React.useContext(AuthContext);
+  const [user, setUser] = useState({});
 
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  const getUser = async () => {
+    try {
+      const user = await AsyncStorage.getItem('user');
+      setUser(JSON.parse(user));
+    } catch (error) {}
+  };
+  console.log(user)
   return (
     <View style={{flex: 1}}>
       <DrawerContentScrollView {...props}>
         <View style={styles.drawerContent}>
           <View style={styles.userInfoSection}>
             <View style={{flexDirection: 'row', marginTop: 15}}>
-              <Avatar.Image
-                source={require('../../img/logohvktmm.png')}
-                size={60}
+            <Avatar.Image
+                source={{
+                  uri: `http://192.168.0.108:4000/uploads/avatar/${user.avatar}`,
+                }}
+                size={50}
               />
               <View style={{marginLeft: 15, flexDirection: 'column'}}>
-                <Title style={styles.title}>NGUYEN VAN A</Title>
-                <Caption style={styles.caption}>nguyenvana@gmail.com</Caption>
+                <Title style={styles.title}>{user.name}</Title>
+                <Caption style={styles.caption}>{user.email}</Caption>
               </View>
             </View>
 

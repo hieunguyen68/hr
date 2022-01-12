@@ -32,6 +32,7 @@ import {
   Edit,
   Can,
   Plus,
+  ShareIcon,
 } from '../../svg/icon';
 import HTML from 'react-native-render-html';
 import {useTheme} from '@react-navigation/native';
@@ -128,15 +129,27 @@ const Post = () => {
                     Hạn nhận hồ sơ: {item.expireDate}
                   </Text>
                 </View>
-                <View>
-                  <TouchableOpacity
-                    style={styles.Edit}
-                    onPress={() =>
-                      navigation.navigate('EditRecruitment', item)
-                    }>
-                    <Edit />
-                    <Text style={styles.timeText}> Sửa tin</Text>
-                  </TouchableOpacity>
+                <View style={styles.modalIcon}>
+                  <View>
+                    <TouchableOpacity
+                      style={styles.Edit}
+                      onPress={() =>
+                        navigation.navigate('EditRecruitment', item)
+                      }>
+                      <Edit />
+                      <Text style={styles.timeText}> Sửa tin</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View>
+                    <TouchableOpacity
+                      style={styles.Edit}
+                      onPress={() =>
+                        navigation.navigate('EditRecruitment', item)
+                      }>
+                      <ShareIcon/>
+                      <Text style={styles.timeText}> Chia sẻ</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </View>
@@ -162,7 +175,7 @@ const Post = () => {
   return (
     <View style={styles.container}>
       <View style={styles.body}>
-        <ScrollView
+        <View
           contentContainerStyle={styles.body}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -173,7 +186,7 @@ const Post = () => {
             keyExtractor={item => item._id}
             renderItem={renderItem}
           />
-        </ScrollView>
+        </View>
       </View>
       <TouchableOpacity
         onPress={() => navigation.navigate('Recruitment')}
@@ -263,7 +276,7 @@ const styles = StyleSheet.create({
   },
   text: {
     marginRight: scale(10),
-    marginTop: scale(5),
+    marginTop: scale(10),
   },
   searchBar: {
     height: scale(56),
@@ -296,7 +309,7 @@ const styles = StyleSheet.create({
   },
   Edit: {
     height: scale(30),
-    width: '45%',
+    width: scale(100),
     backgroundColor: 'rgb(225,225,225)',
     borderRadius: scale(15),
     flexDirection: 'row',
@@ -305,7 +318,7 @@ const styles = StyleSheet.create({
     borderWidth: scale(1),
     borderColor: '#000',
     marginTop: scale(10),
-    marginLeft: '30%',
+    marginLeft: scale(28),
   },
   can: {
     position: 'absolute',
@@ -352,9 +365,6 @@ const styles = StyleSheet.create({
   },
   modalIcon: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    height: scale(30),
-    alignItems: 'center',
   },
   itemCategory: {
     backgroundColor: '#f0f0f0',

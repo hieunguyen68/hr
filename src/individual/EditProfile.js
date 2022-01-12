@@ -38,7 +38,7 @@ const EditProfile = () => {
   const [gender, setGender] = useState(route.params.gender);
   const [email, setEmail] = useState(route.params.email);
   const [phone, setPhone] = useState(route.params.phone);
-  const [companyName, setCompanyName] = useState(route.params.company);
+  const [companyName, setCompanyName] = useState(route.params.companyName);
   const [name, setName] = useState(route.params.name);
   const [website, setWebsite] = useState(route.params.website);
   const [avatar, setAvatar] = useState(route.params.avatar);
@@ -153,9 +153,7 @@ const EditProfile = () => {
               onChangeText={nameinput => setName(nameinput)}
               placeholderTextColor={'#cecece'}
               placeholder={name}
-              style={styles.inputText}>
-              Nguyễn Văn A
-            </TextInput>
+              style={styles.inputText}></TextInput>
           </View>
         </ImageBackground>
       </View>
@@ -163,7 +161,7 @@ const EditProfile = () => {
         <ScrollView>
           <View style={styles.container}>
             <View style={styles.InforContainer}>
-              <View style={styles.EmailInput}>
+              {/* <View style={styles.EmailInput}>
                 <Text style={styles.title}>Giới tính</Text>
                 <View style={styles.GenderBox}>
                   <Picker
@@ -175,7 +173,7 @@ const EditProfile = () => {
                     <Picker.Item label="Nữ" value="Nữ" />
                   </Picker>
                 </View>
-              </View>
+              </View> */}
               <View style={styles.EmailInput}>
                 <Text style={styles.title}>E-mail</Text>
                 <View style={styles.emailBox}>
@@ -230,6 +228,7 @@ const EditProfile = () => {
         <TouchableOpacity
           style={styles.button1}
           onPress={() => {
+            navigation.navigate('LoginScreen');
             sendUpdateData();
             setModalVisible(true);
           }}>
@@ -340,7 +339,7 @@ const styles = StyleSheet.create({
   nameInput: {
     marginTop: scale(10),
     justifyContent: 'flex-end',
-    width: '50%',
+    width: '80%',
     height: scale(40),
     alignItems: 'center',
     borderBottomWidth: scale(1 / 2),
@@ -348,12 +347,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   inputText: {
-    color: 'white',
+    color: 'black',
     fontSize: scale(18),
     height: '100%',
   },
   InforContainer: {
-    width: '90%',
+    width: '100%',
   },
   title: {
     color: 'black',
@@ -361,10 +360,10 @@ const styles = StyleSheet.create({
   },
   EmailInput: {
     height: scale(70),
-    justifyContent: 'space-between',
+    width: '100%',
   },
   emailBox: {
-    height: scale(40),
+    height: scale(45),
     borderWidth: scale(1 / 2),
     borderRadius: scale(5),
   },
