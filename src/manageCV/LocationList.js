@@ -33,11 +33,9 @@ const LocationList = () => {
   const route = useRoute();
   const [newsID, setNewsID] = useState('');
   const [data, setData] = useState([]);
-  console.log(route.data);
 
   useEffect(() => {
     getData();
-    
   }, []);
 
   React.useEffect(() => {
@@ -58,13 +56,13 @@ const LocationList = () => {
         },
       );
       setData(res.data);
-
     } catch (error) {
       console.log(error);
     }
   };
 
   const renderItem = ({item}) => {
+    console.log(item.user);
     const backgroundColor = item.id === newsID ? '#2C2F2E' : 'white';
     return (
       <View style={styles.container}>
@@ -78,9 +76,12 @@ const LocationList = () => {
                 <Image
                   style={styles.image}
                   source={{
-                    uri: `http://localhost:4000/uploads/avatar/${item.user.avatar}`,
+                    uri: `http://${
+                      Platform.OS === 'ios' ? 'localhost' : '192.168.1.11'
+                    }:4000/uploads/avatar/${item.user.avatar}`,
                   }}
                 />
+                {/* <Image style={styles.image} source={require('../../img/12345678.jpg')} /> */}
               </View>
               <View style={styles.text}>
                 <View style={styles.viewNew}>

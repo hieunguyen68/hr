@@ -31,7 +31,7 @@ const CandidateProfile = () => {
   const route = useRoute();
   const [newsID, setNewsID] = useState('');
   const [data, setData] = useState([]);
-
+  console.log(route.avatar);
   useEffect(() => {
     getData();
   }, []);
@@ -55,12 +55,13 @@ const CandidateProfile = () => {
       );
       setData(res.data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
   const renderItem = ({item}) => {
     const backgroundColor = 'white';
+    console.log(item.user.avatar);
     return (
       <View style={styles.container}>
         <TouchableOpacity onPress={() => navigation.navigate('Profile', item)}>
@@ -70,7 +71,9 @@ const CandidateProfile = () => {
                 <Image
                   style={styles.image}
                   source={{
-                    uri: `http://localhost:4000/uploads/avatar/${item.user.avatar}`,
+                    uri: `http://${
+                      Platform.OS === 'ios' ? 'localhost' : '192.168.1.11'
+                    }:4000/uploads/avatar/${item.user.avatar}`,
                   }}
                 />
               </View>

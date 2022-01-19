@@ -68,7 +68,7 @@ const MainHomepage = () => {
                 style={styles.image}
                 source={{
                   uri: `http://${
-                    Platform.OS === 'ios' ? 'localhost' : '192.168.0.108'
+                    Platform.OS === 'ios' ? 'localhost' : '192.168.1.11'
                   }:4000/uploads/post/${item.image}`,
                 }}
               />

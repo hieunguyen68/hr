@@ -55,7 +55,7 @@ export function DrawerContent({props, navigation}) {
             <View style={{flexDirection: 'row', marginTop: 15}}>
             <Avatar.Image
                 source={{
-                  uri: `http://192.168.0.108:4000/uploads/avatar/${user.avatar}`,
+                  uri: `http://192.168.1.11:4000/uploads/avatar/${user.avatar}`,
                 }}
                 size={50}
               />

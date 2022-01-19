@@ -28,10 +28,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const EditProfile = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const [date, setDate] = useState(
-    route.params.birthday
-      ? Number(new Date(route.params.birthday))
-      : Date.now(),
+  const [birthday, setBirthday] = useState(
+    route.params.birthday,
+    // ? Number(new Date(route.params.birthday))
+    // : Date.now(),
   );
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
@@ -43,19 +43,25 @@ const EditProfile = () => {
   const [website, setWebsite] = useState(route.params.website);
   const [avatar, setAvatar] = useState(route.params.avatar);
   const [modalVisible, setModalVisible] = useState(false);
+  const [avatarUri, setAvatarUri] = useState(
+    `http://${
+      Platform.OS === 'ios' ? 'localhost' : '192.168.1.11'
+    }:4000/uploads/avatar/${route.params.avatar}`,
+  );
 
   const sendUpdateData = async () => {
     let user = await AsyncStorage.getItem('user');
     user = JSON.parse(user);
-    console.log(user);
     await axios
       .put(`${getEndpoint(Platform.OS)}/hr/${user.email}`, {
+        avatar,
         email,
         gender,
         phone,
         companyName,
         name,
         website,
+        birthday,
       })
       .then(response => {
         console.log(response);
@@ -91,8 +97,8 @@ const EditProfile = () => {
   function selectImage() {
     let options = {
       title: 'You can choose one image',
-      // maxWidth: 256,
-      // maxHeight: 256,
+      maxWidth: 256,
+      maxHeight: 256,
       noData: true,
       mediaType: 'photo',
       storageOptions: {
@@ -112,6 +118,8 @@ const EditProfile = () => {
       } else {
         console.log(response);
         let source = {uri: response.uri};
+        setAvatar(response);
+        setAvatarUri('data:image/jpeg;base64,' + response.base64);
         // UploadAvatar(response.base64);
         // ADD THIS
         // setUrlAvatar(source.uri);
@@ -119,49 +127,49 @@ const EditProfile = () => {
     });
   }
   return (
-    <View style={styles.container}>
+    <View>
       <TitleBar title1={'Cập nhật thông tin cá nhân'} />
-      <View style={styles.Avatar}>
-        <ImageBackground
-          blurRadius={2}
-          style={styles.bigAvatar}
-          // source={{
-          //   uri: UrlAvatar,
-          // }}
-        >
-          <View style={styles.avatarContainer}>
-            <View style={styles.circle}>
-              <ImageBackground
-                style={styles.logo}
-                // source={{
-                //   uri: UrlAvatar,
-                // }}
-              >
-                <TouchableOpacity
-                  style={styles.changeAvatarBut}
-                  onPress={() => {
-                    selectImage();
-                  }}>
-                  <CameraIcon />
-                </TouchableOpacity>
-              </ImageBackground>
-            </View>
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.Avatar}>
+            <ImageBackground
+              blurRadius={2}
+              style={styles.bigAvatar}
+              source={{
+                uri: avatarUri,
+              }}>
+              <View style={styles.avatarContainer}>
+                <View style={styles.circle}>
+                  <ImageBackground
+                    style={styles.logo}
+                    source={{
+                      uri: avatarUri,
+                    }}>
+                    <TouchableOpacity
+                      style={styles.changeAvatarBut}
+                      onPress={() => {
+                        selectImage();
+                      }}>
+                      <CameraIcon />
+                    </TouchableOpacity>
+                  </ImageBackground>
+                </View>
+              </View>
+              <View style={styles.nameInput}>
+                <TextInput
+                  value={name}
+                  onChangeText={nameinput => setName(nameinput)}
+                  placeholderTextColor={'#cecece'}
+                  placeholder={name}
+                  style={styles.inputText}></TextInput>
+              </View>
+            </ImageBackground>
           </View>
-          <View style={styles.nameInput}>
-            <TextInput
-              value={name}
-              onChangeText={nameinput => setName(nameinput)}
-              placeholderTextColor={'#cecece'}
-              placeholder={name}
-              style={styles.inputText}></TextInput>
-          </View>
-        </ImageBackground>
-      </View>
-      <View>
-        <ScrollView>
-          <View style={styles.container}>
-            <View style={styles.InforContainer}>
-              {/* <View style={styles.EmailInput}>
+          <View>
+            <ScrollView>
+              <View style={styles.container}>
+                <View style={styles.InforContainer}>
+                  {/* <View style={styles.EmailInput}>
                 <Text style={styles.title}>Giới tính</Text>
                 <View style={styles.GenderBox}>
                   <Picker
@@ -174,93 +182,126 @@ const EditProfile = () => {
                   </Picker>
                 </View>
               </View> */}
-              <View style={styles.EmailInput}>
-                <Text style={styles.title}>E-mail</Text>
-                <View style={styles.emailBox}>
-                  <TextInput
-                    value={email}
-                    onChangeText={emailinput => setEmail(emailinput)}
-                    placeholder={email}
-                    style={styles.textInput}
-                  />
-                </View>
-              </View>
-              <View style={styles.EmailInput}>
-                <Text style={styles.title}>Số điện thoại</Text>
-                <View style={styles.emailBox}>
-                  <TextInput
-                    value={phone}
-                    onChangeText={phoneinput => setPhone(phoneinput)}
-                    placeholder={phone}
-                    style={styles.textInput}
-                  />
-                </View>
-              </View>
+                  <View style={styles.EmailInput}>
+                    <Text style={styles.title}>E-mail</Text>
+                    <View style={styles.emailBox}>
+                      <TextInput
+                        value={email}
+                        onChangeText={emailinput => setEmail(emailinput)}
+                        placeholder={email}
+                        style={styles.textInput}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.EmailInput}>
+                    <Text style={styles.title}>Ngày sinh</Text>
+                    <View style={styles.emailBox}>
+                      <TouchableOpacity
+                        style={styles.textInput}
+                        onPress={() => showDatepicker()}>
+                        <Text style={styles.textInput}>
+                          {birthday ? (
+                            <>
+                              {birthday.slice(0, 2)}/{birthday.slice(2, 4)}/
+                              {birthday.slice(4)}
+                            </>
+                          ) : (
+                            <></>
+                          )}
+                        </Text>
+                      </TouchableOpacity>
+                      {show && (
+                        <DateTimePicker
+                          testID="dateTimePicker"
+                          value={birthday}
+                          mode={mode}
+                          is24Hour={true}
+                          display="default"
+                          onChange={onChange}
+                        />
+                      )}
+                    </View>
+                  </View>
+                  <View style={styles.EmailInput}>
+                    <Text style={styles.title}>Số điện thoại</Text>
+                    <View style={styles.emailBox}>
+                      <TextInput
+                        value={phone}
+                        onChangeText={phoneinput => setPhone(phoneinput)}
+                        placeholder={phone}
+                        style={styles.textInput}
+                      />
+                    </View>
+                  </View>
 
-              <View style={styles.EmailInput}>
-                <Text style={styles.title}>Công ty</Text>
-                <View style={styles.emailBox}>
-                  <TextInput
-                    value={companyName}
-                    onChangeText={companyinput => setCompanyName(companyinput)}
-                    placeholder={companyName}
-                    style={styles.textInput}
-                  />
-                </View>
-              </View>
+                  <View style={styles.EmailInput}>
+                    <Text style={styles.title}>Công ty</Text>
+                    <View style={styles.emailBox}>
+                      <TextInput
+                        value={companyName}
+                        onChangeText={companyinput =>
+                          setCompanyName(companyinput)
+                        }
+                        placeholder={companyName}
+                        style={styles.textInput}
+                      />
+                    </View>
+                  </View>
 
-              <View style={styles.EmailInput}>
-                <Text style={styles.title}>Website</Text>
-                <View style={styles.emailBox}>
-                  <TextInput
-                    value={website}
-                    onChangeText={degreeinput => setWebsite(degreeinput)}
-                    placeholder={website}
-                    style={styles.textInput}
-                  />
+                  <View style={styles.EmailInput}>
+                    <Text style={styles.title}>Website</Text>
+                    <View style={styles.emailBox}>
+                      <TextInput
+                        value={website}
+                        onChangeText={degreeinput => setWebsite(degreeinput)}
+                        placeholder={website}
+                        style={styles.textInput}
+                      />
+                    </View>
+                  </View>
                 </View>
               </View>
-            </View>
+              <TouchableOpacity
+                style={styles.button1}
+                onPress={() => {
+                  navigation.navigate('LoginScreen');
+                  sendUpdateData();
+                  setModalVisible(true);
+                }}>
+                <LinearGradient
+                  colors={['rgb(254,193,13)', 'rgb(238,49,40)']}
+                  style={styles.signIn}>
+                  <Text style={styles.Button1Text}>Cập nhật thông tin</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </ScrollView>
+            <View style={styles.line} />
+
+            <Modal
+              animationType="fade"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                Alert.alert('Modal has been closed.');
+              }}>
+              <TouchableOpacity
+                style={styles.smallCenteredView}
+                onPress={() => {
+                  setModalVisible(false);
+                }}>
+                <View style={styles.smallModalView}>
+                  <View style={styles.modalCenter}>
+                    <CheckIcon />
+                    <Text style={styles.smallModalText}>
+                      Cập nhật thông tin thành công
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </Modal>
           </View>
-        </ScrollView>
-        <View style={styles.line} />
-
-        <TouchableOpacity
-          style={styles.button1}
-          onPress={() => {
-            navigation.navigate('LoginScreen');
-            sendUpdateData();
-            setModalVisible(true);
-          }}>
-          <LinearGradient
-            colors={['rgb(254,193,13)', 'rgb(238,49,40)']}
-            style={styles.signIn}>
-            <Text style={styles.Button1Text}>Cập nhật thông tin</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-          }}>
-          <TouchableOpacity
-            style={styles.smallCenteredView}
-            onPress={() => {
-              setModalVisible(false);
-            }}>
-            <View style={styles.smallModalView}>
-              <View style={styles.modalCenter}>
-                <CheckIcon />
-                <Text style={styles.smallModalText}>
-                  Cập nhật thông tin thành công
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        </Modal>
-      </View>
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -277,13 +318,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   Avatar: {
-    height: scale(220),
-    width: '150%',
+    height: scale(250),
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },
   bigAvatar: {
-    height: scale(220),
+    height: scale(250),
     width: '100%',
     resizeMode: 'stretch',
     alignItems: 'center',
@@ -340,15 +381,16 @@ const styles = StyleSheet.create({
     marginTop: scale(10),
     justifyContent: 'flex-end',
     width: '80%',
-    height: scale(40),
+    height: scale(70),
     alignItems: 'center',
-    borderBottomWidth: scale(1 / 2),
+    borderBottomWidth: scale(1),
     borderColor: 'white',
     alignSelf: 'center',
   },
   inputText: {
+    fontWeight: 'bold',
     color: 'black',
-    fontSize: scale(18),
+    fontSize: scale(22),
     height: '100%',
   },
   InforContainer: {

@@ -26,9 +26,7 @@ const Recruitment = () => {
   console.log(route.params);
   const [salary, setSalary] = useState(route.params.salary);
   const [title, setTitle] = useState(route.params.title);
-  const [expireDate, setExpireDate] = useState(
-    Number(new Date(route.params.expireDate)),
-  );
+  const [expireDate, setExpireDate] = useState(route.params.expireDate);
   const [type, setType] = useState(route.params.type);
   const [quantity, setQuantity] = useState(route.params.quantity);
   const [exp, setExp] = useState(route.params.exp);
@@ -271,7 +269,7 @@ const Recruitment = () => {
                       style={styles.textInput}
                       onPress={() => showDatepicker()}>
                       <Text style={styles.textInput}>
-                        {new Date(expireDate)
+                        {(expireDate)
                           .toLocaleString('en-GB')
                           .substring(0, 10)}
                       </Text>
@@ -279,7 +277,7 @@ const Recruitment = () => {
                     {show && (
                       <DateTimePicker
                         testID="dateTimePicker"
-                        value={expireDate}
+                        // value={expireDate}
                         mode={mode}
                         is24Hour={true}
                         display="default"

@@ -43,7 +43,7 @@ const StackMessenger = props => {
         res.data.map(i => ({
           id: i._id,
           avatar:
-            'http://woridnews.com/wp-content/uploads/2016/10/cd3e35dbcf23269780779b3f7b9e2fcc.png',
+            'http://192.168.1.11:4000/uploads/avatar/12345678.jpg',
           name: i.userName,
           description: i.content,
           userId: i.userId,

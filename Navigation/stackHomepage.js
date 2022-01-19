@@ -63,7 +63,6 @@ function StackHomepage({navigation, route}) {
         options={{
           headerTitle: props => <LogoTitle text="Tin nhắn" />,
           headerBackImage: () => <BackIcon color={'black'} />,
-          headerRight: () => <CheckMenu color={'black'} />,
         }}
       />
       <Stack.Screen
@@ -72,7 +71,6 @@ function StackHomepage({navigation, route}) {
         options={{
           headerTitle: props => <LogoTitle text="Tin nhắn" />,
           headerBackImage: () => <BackIcon color={'black'} />,
-          headerRight: () => <CheckMenu color={'black'} />,
         }}
       />
       <Stack.Screen
@@ -81,7 +79,6 @@ function StackHomepage({navigation, route}) {
         options={{
           headerTitle: props => <LogoTitle text="Thông báo" />,
           headerBackImage: () => <BackIcon color={'black'} />,
-        
         }}
       />
       <Stack.Screen

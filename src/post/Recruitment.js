@@ -25,7 +25,7 @@ const Recruitment = () => {
   const route = useRoute();
   const [salary, setSalary] = useState();
   const [title, setTitle] = useState();
-  const [expireDate, setExpireDate] = useState(1640970000000);
+  const [expireDate, setExpireDate] = useState(new Date());
   const [type, setType] = useState('Toàn thời gian');
   const [quantity, setQuantity] = useState();
   const [exp, setExp] = useState();

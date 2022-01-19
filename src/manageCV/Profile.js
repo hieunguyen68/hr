@@ -20,14 +20,14 @@ import LinearGradient from 'react-native-linear-gradient';
 import {ScrollView} from 'react-native-gesture-handler';
 import {Can, Check} from '../../svg/icon';
 import {getEndpoint} from '../utils';
+import WebView from 'react-native-webview';
 
 const Profile = () => {
   const route = useRoute();
   const [user, setUser] = useState();
-  const {name, birthday, gender, email, address, phone, degree} =
+  const {name, birthday, gender, email, address, phone, degree, avatar, cv} =
     route.params.user;
   const navigation = useNavigation();
-  console.log(route.params.user);
   useEffect(() => {
     getUser();
   }, []);
@@ -68,6 +68,17 @@ const Profile = () => {
       Alert.alert('Có lỗi xảy ra');
     }
   };
+  function DownloadCv() {
+    return (
+      <WebView
+        source={{
+          uri: `http://${
+            Platform.OS === 'ios' ? 'localhost' : '192.168.1.11'
+          }:4000/uploads/cv/${cv}`,
+        }}
+      />
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -76,7 +87,9 @@ const Profile = () => {
           <Image
             style={styles.logo}
             source={{
-              uri: `http://localhost:4000/uploads/avatar/${avatar}`,
+              uri: `http://${
+                Platform.OS === 'ios' ? 'localhost' : '192.168.1.11'
+              }:4000/uploads/avatar/${avatar}`,
             }}
           />
         </View>
@@ -106,6 +119,9 @@ const Profile = () => {
 
               <Text style={styles.textLeft}>Học Vấn</Text>
               <View style={styles.leftLine} />
+
+              <Text style={styles.textLeft}>CV</Text>
+              <View style={styles.leftLine} />
             </View>
             <View style={styles.RightTable}>
               <Text style={styles.textLeft}>{name}</Text>
@@ -130,6 +146,20 @@ const Profile = () => {
 
               <Text style={styles.textLeft}>{degree}</Text>
               <View style={styles.rightLine} />
+              <View style={{flexDirection: 'row'}}>
+                <Text style={styles.textLeft}>{cv}</Text>
+                <TouchableOpacity activeOpacity={0.5} onPress={DownloadCv}>
+                  {/* <WebView
+                    source={{
+                      uri: `http://${
+                        Platform.OS === 'ios' ? 'localhost' : '192.168.1.11'
+                      }:4000/uploads/cv/${cv}`,
+                    }}
+                  /> */}
+                  <Text style={styles.download}>Tải về</Text>
+                </TouchableOpacity>
+              </View>
+              
             </View>
           </View>
         </ScrollView>
@@ -161,8 +191,8 @@ const styles = StyleSheet.create({
   },
   avatarContainer: {
     marginTop: scale(30),
-    height: scale(100),
-    width: scale(100),
+    height: scale(120),
+    width: scale(120),
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
@@ -188,7 +218,7 @@ const styles = StyleSheet.create({
   },
   buttonBack: {
     width: scale(120),
-    height: scale(45),
+    height: scale(40),
     alignSelf: 'center',
     borderRadius: scale(25),
     justifyContent: 'center',
@@ -200,7 +230,7 @@ const styles = StyleSheet.create({
   buttonNext: {
     marginLeft: scale(50),
     width: scale(120),
-    height: scale(45),
+    height: scale(40),
     alignSelf: 'center',
     borderRadius: scale(25),
     justifyContent: 'center',
@@ -238,6 +268,13 @@ const styles = StyleSheet.create({
   textLeft: {
     fontSize: scale(15),
     marginVertical: scale(10),
+  },
+  download: {
+    fontSize: scale(15),
+    marginVertical: scale(10),
+    color: 'rgb(0,190,90)',
+    marginLeft: scale(15),
+    textDecorationLine: 'underline',
   },
   leftLine: {
     width: '100%',
